@@ -47,6 +47,22 @@ sorting_visualizer/
 - График зависимости числа операций от размера массива
 - Новые виды алгоритмов
 
+## Запуск через Docker
+
+```bash
+# 1. Собрать образ
+docker build -t sorting-visualizer .
+
+# 2. Запустить контейнер
+docker run --rm -p 5000:5000 sorting-visualizer
+```
+
+Открой в браузере: `http://localhost:5000`
+
+Если запуск не удался:
+- `Cannot connect to the Docker daemon` — Docker не запущен. Запусти Docker Desktop или `sudo systemctl start docker`
+- `Port is already allocated` — порт 5000 занят. Замени на `docker run --rm -p 5001:5000 sorting-visualizer` и открывай `http://localhost:5001`
+
 ## Инструкция запуска
 
 ```bash
