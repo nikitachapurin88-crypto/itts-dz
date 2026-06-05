@@ -193,6 +193,46 @@ def shell_sort(arr):
     _snap(a, steps, stats, done=list(range(n)))
     return steps
 
+# ── Heap sort ────────────────────────────────────────────────────────────────
+
+def heap_sort(arr):
+    a = list(arr)
+    n = len(a)
+    steps = []
+    stats = {"cmps": 0, "swaps": 0}
+
+    def _heapify(n, i):
+        largest = i
+        left = 2 * i + 1
+        right = 2 * i + 2
+
+        if left < n:
+            _snap(a, steps, stats, cmp=[largest, left])
+            if a[left] > a[largest]:
+                largest = left
+
+        if right < n:
+            _snap(a, steps, stats, cmp=[largest, right])
+            if a[right] > a[largest]:
+                largest = right
+
+        if largest != i:
+            a[i], a[largest] = a[largest], a[i]
+            _snap(a, steps, stats, swap=[i, largest])
+            _heapify(n, largest)
+
+    for i in range(n // 2 - 1, -1, -1):
+        _heapify(n, i)
+
+    done = []
+    for i in range(n - 1, 0, -1):
+        a[0], a[i] = a[i], a[0]
+        _snap(a, steps, stats, swap=[0, i])
+        done = [*done, i]
+        _heapify(i, 0)
+
+    _snap(a, steps, stats, done=list(range(n)))
+    return steps
 
 # ── Registry ─────────────────────────────────────────────────────────────────
 
@@ -203,6 +243,7 @@ ALGORITHMS = {
     "quick":     quick_sort,
     "merge":     merge_sort,
     "shell":     shell_sort,
+    "heap":      heap_sort,
 }
 
 
