@@ -50,10 +50,13 @@ sorting_visualizer/
 ## Запуск через Docker
 
 ```bash
-# 1. Собрать образ
+# 1. Клонировать / cкопировать проект
+git clone https://github.com/nikitachapurin88-crypto/itts-dz.git
+
+# 2. Собрать образ
 docker build -t sorting-visualizer .
 
-# 2. Запустить контейнер
+# 3. Запустить контейнер
 docker run --rm -p 5000:5000 sorting-visualizer
 ```
 
@@ -67,7 +70,7 @@ docker run --rm -p 5000:5000 sorting-visualizer
 
 ```bash
 # 1. Клонировать / скопировать проект
-cd sorting_visualizer
+git clone https://github.com/nikitachapurin88-crypto/itts-dz.git
 
 # 2. Создать виртуальное окружение
 python3 -m venv venv
