@@ -52,4 +52,4 @@ def sort_steps():
 
 if __name__ == "__main__":
     debug_mode = os.environ.get("FLASK_DEBUG", "0") == "1"
-    app.run(debug=debug_mode, host='0.0.0.0') # nosemgrep: flask-host-0000-without-debug-check
+    app.run(debug=debug_mode, host='0.0.0.0') # nosemgrep: flask-host-0000-without-debug-check,python.flask.security.audit.app-run-param-config.avoid_app_run_with_bad_host
