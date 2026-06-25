@@ -1,0 +1,49 @@
+rules:
+  - id: flask-debug-mode-enabled
+    languages: [python]
+    severity: ERROR
+    message: >
+      Flask app запущен с debug=True. В debug-режиме Werkzeug включает
+      интерактивный дебаггер на страницах ошибок — если приложение
+      доступно по сети (host='0.0.0.0') и хоть один запрос вызовет
+      исключение, любой, кто видит страницу с трейсбеком, может
+      выполнить произвольный Python-код через PIN дебаггера.
+      CWE-489: Active Debug Code.
+    metadata:
+      cwe: "CWE-489: Active Debug Code"
+      category: security
+      references:
+        - https://flask.palletsprojects.com/en/latest/quickstart/#debug-mode
+    patterns:
+      - pattern: $APP.run(..., debug=True, ...)
+
+  - id: bare-except-swallows-errors
+    languages: [python]
+    severity: WARNING
+    message: >
+      Голый "except Exception" (или слишком широкий except) скрывает
+      реальную причину ошибки и может маскировать проблемы безопасности
+      (например, неожиданное исключение в авторизации тихо проглатывается).
+      Лучше перехватывать конкретный тип исключения.
+    metadata:
+      category: best-practice
+    patterns:
+      - pattern: |
+          try:
+              ...
+          except Exception:
+              ...
+
+  - id: flask-host-0000-without-debug-check
+    languages: [python]
+    severity: INFO
+    message: >
+      app.run(host='0.0.0.0') делает сервер доступным со всех сетевых
+      интерфейсов, а не только localhost. Это ожидаемо для контейнера/Docker,
+      но стоит убедиться, что в проде это не сочетается с debug=True
+      и что наружу не должен смотреть встроенный dev-сервер Werkzeug
+      (для прода используется gunicorn/uwsgi, а не app.run напрямую).
+    metadata:
+      category: security
+    patterns:
+      - pattern: $APP.run(host="0.0.0.0", ...)

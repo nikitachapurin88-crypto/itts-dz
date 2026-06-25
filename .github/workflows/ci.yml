@@ -32,5 +32,11 @@ jobs:
         run: |
           pip install ruff
           ruff check .
+
+      - name: Run static security analysis (Semgrep)
+        run: |
+          pip install semgrep
+          semgrep --config p/python --config p/security-audit --config .semgrep_custom.yml . --error --exclude=venv
+
       - name: Build Docker image
         run: docker build -t sorting-visualizer .
