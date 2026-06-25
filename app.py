@@ -26,7 +26,10 @@ def index():
 
 @app.route("/api/array")
 def get_array():
-    size = int(request.args.get("size", 40))
+    try:
+        size = int(request.args.get("size", 40))
+    except ValueError:
+        return jsonify({"error": "size must be an integer"}), 400
     mode = request.args.get("mode", "random")
     size = max(5, min(100, size))
     return jsonify({"array": generate_array(size, mode)})
@@ -39,7 +42,10 @@ def sort_steps():
     algo = data.get("algorithm", "bubble")
 
     from algorithms import get_steps
-    steps = get_steps(arr, algo)
+    try:
+        steps = get_steps(arr, algo)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
     return jsonify({"steps": steps, "total": len(steps)})
 
 
