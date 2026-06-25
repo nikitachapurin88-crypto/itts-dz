@@ -6,7 +6,7 @@
 
 ## Основной функционал
 
-- Визуализация 6 алгоритмов: Bubble, Insertion, Selection, Quick, Merge, Shell sort
+- Визуализация 7 алгоритмов: Heap, Bubble, Insertion, Selection, Quick, Merge, Shell sort
 - Три типа входного массива: случайный, обратный, почти отсортированный
 - Настройка размера массива (10–100 элементов) и скорости анимации
 - Счётчики сравнений, свапов и шагов в реальном времени
@@ -15,22 +15,29 @@
 
 ## Технологический стек
 
-- **Python 3.12** + **Flask 3** — бэкенд, REST API
+- **Python 3.11** + **Flask 3** — бэкенд, REST API
 - **Vanilla JS** — фронтенд, анимация
 - **HTML/CSS** — интерфейс
 
 ## Архитектура
 
 ```
-sorting_visualizer/
+itts-dz/
 ├── app.py              # Flask-приложение, роуты
 ├── algorithms.py       # Алгоритмы сортировки (генерируют шаги)
 ├── requirements.txt
+├── Dockerfile
+├── .semgrep_custom.yml # Кастомные правила статического анализа
+├── .github/workflows/
+│   └── ci.yml          # CI-пайплайн
 ├── templates/
 │   └── index.html      # Страница приложения
-└── static/
-    ├── css/style.css
-    └── js/main.js      # Логика анимации
+├── static/
+│   ├── css/style.css
+│   └── js/main.js      # Логика анимации
+└── tests/
+    ├── test_algorithms.py
+    └── test_app.py
 ```
 
 Бэкенд принимает массив и название алгоритма, возвращает список всех шагов сортировки. Фронтенд проигрывает их с заданной скоростью — логика и отображение разделены.
@@ -67,7 +74,8 @@ docker run --rm -p 5000:5000 sorting-visualizer
 
 ```bash
 # 1. Клонировать / скопировать проект
-cd sorting_visualizer
+git clone https://github.com/nikitachapurin88-crypto/itts-dz.git
+cd itts-dz
 
 # 2. Создать виртуальное окружение
 python3 -m venv venv
@@ -93,4 +101,46 @@ Address already in use
 Страница не открывается в браузере
 Попробуй http://0.0.0.0:5000 или поменяй в app.py последнюю строку на app.run(host='0.0.0.0', port=5000) и перезапусти.
 No such file or directory: requirements.txt
-Ты не в папке проекта. Запусти cd ~/sorting_visualizer сначала.
+Ты не в папке проекта. Запусти cd ~/itts-dz сначала.
+
+## Тестирование
+
+Два уровня тестов, оба автоматизированы:
+- **Unit** (`tests/test_algorithms.py`) — корректность алгоритмов, параметризованы по всем 7 алгоритмам.
+- **Functional** (`tests/test_app.py`) — HTTP API через Flask `test_client`.
+
+Запуск:
+```bash
+pytest tests/ -v
+```
+
+## Статический анализ (SAST)
+
+Semgrep с публичными наборами `p/python`, `p/security-audit` и кастомными правилами (`.semgrep_custom.yml`).
+
+```bash
+semgrep --config p/python --config p/security-audit --config .semgrep_custom.yml . --error --exclude=venv
+```
+
+## Анализ зависимостей (SCA)
+
+Trivy — генерация SBOM и сканирование Docker-образа на уязвимости.
+
+```bash
+# SBOM
+trivy fs --format cyclonedx --output sbom.json .
+
+# Скан образа
+docker build -t sorting-visualizer .
+trivy image sorting-visualizer
+```
+
+## CI
+
+GitHub Actions (`.github/workflows/ci.yml`) на каждый PR и push в `main`:
+проверка синтаксиса → тесты (`pytest`) → линтер (`ruff`) → статический анализ (`semgrep`) → сборка Docker-образа.
+
+---
+
+Подробный разбор архитектуры, тестирования и безопасности — в [REPORT.md](REPORT.md).
+
