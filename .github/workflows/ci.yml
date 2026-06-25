@@ -25,6 +25,9 @@ jobs:
           python -m py_compile app.py
           python -m py_compile algorithms.py
 
+      - name: Run tests
+        run: pytest tests/ -v
+
       - name: Run lint
         run: |
           pip install ruff
